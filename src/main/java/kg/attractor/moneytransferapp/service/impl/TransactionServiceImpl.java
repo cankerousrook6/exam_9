@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -378,6 +380,75 @@ public class TransactionServiceImpl
                 "Transfer {} approved and completed",
                 id
         );
+    }
+
+    @Override
+    public List<Transaction> getUserTransactions(
+            User user,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            String sort
+    ) {
+
+        List<Transaction> transactions =
+                transactionRepository
+                        .findAllBySenderAccount_UserOrReceiverAccount_UserOrderByCreatedAtDesc(
+                                user,
+                                user
+                        )
+                        .stream()
+                        .filter(
+                                transaction ->
+                                        transaction.getStatus()
+                                                == TransactionStatus.COMPLETED
+                        )
+                        .filter(
+                                transaction ->
+                                        dateFrom == null
+                                                || !transaction
+                                                .getCreatedAt()
+                                                .toLocalDate()
+                                                .isBefore(
+                                                        dateFrom
+                                                )
+                        )
+                        .filter(
+                                transaction ->
+                                        dateTo == null
+                                                || !transaction
+                                                .getCreatedAt()
+                                                .toLocalDate()
+                                                .isAfter(
+                                                        dateTo
+                                                )
+                        )
+                        .toList();
+
+        if (
+                "currency".equals(sort)
+        ) {
+
+            return transactions
+                    .stream()
+                    .sorted(
+                            Comparator.comparing(
+                                    transaction ->
+                                            transaction
+                                                    .getCurrency()
+                                                    .name()
+                            )
+                    )
+                    .toList();
+        }
+
+        return transactions
+                .stream()
+                .sorted(
+                        Comparator.comparing(
+                                Transaction::getCreatedAt
+                        ).reversed()
+                )
+                .toList();
     }
 
     private BigDecimal getExchangeRate(

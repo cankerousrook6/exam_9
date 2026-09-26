@@ -4,6 +4,7 @@ import kg.attractor.moneytransferapp.model.Transaction;
 import kg.attractor.moneytransferapp.model.User;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TransactionService {
@@ -30,5 +31,12 @@ public interface TransactionService {
 
     void approve(
             Long id
+    );
+
+    List<Transaction> getUserTransactions(
+            User user,
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            String sort
     );
 }
