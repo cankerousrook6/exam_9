@@ -5,6 +5,10 @@ spring:
   application:
     name: MoneyTransferApp
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
   datasource:
     url: jdbc:h2:file:./db/moneytransfer
     username: root

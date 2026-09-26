@@ -32,12 +32,12 @@ public class UserServiceImpl
         ) {
 
             log.warn(
-                    "Registration failed. Username {} already exists",
+                    "Username {} already exists",
                     dto.getUsername()
             );
 
             throw new IllegalArgumentException(
-                    "User with this username already exists"
+                    "register.username.exists"
             );
         }
 
@@ -72,9 +72,7 @@ public class UserServiceImpl
     ) {
 
         return userRepository
-                .findByUsername(
-                        username
-                )
+                .findByUsername(username)
                 .orElseThrow(
                         () -> {
 
@@ -84,7 +82,7 @@ public class UserServiceImpl
                             );
 
                             return new UsernameNotFoundException(
-                                    "User not found"
+                                    "user.notFound"
                             );
                         }
                 );

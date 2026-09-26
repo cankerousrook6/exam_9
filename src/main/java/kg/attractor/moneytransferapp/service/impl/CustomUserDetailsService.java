@@ -22,7 +22,9 @@ public class CustomUserDetailsService
 
         User user =
                 userRepository
-                        .findByUsername(username)
+                        .findByUsername(
+                                username
+                        )
                         .orElseThrow(
                                 () ->
                                         new UsernameNotFoundException(
@@ -30,7 +32,8 @@ public class CustomUserDetailsService
                                         )
                         );
 
-        return org.springframework.security.core.userdetails.User
+        return org.springframework.security
+                .core.userdetails.User
                 .withUsername(
                         user.getUsername()
                 )
@@ -38,7 +41,8 @@ public class CustomUserDetailsService
                         user.getPassword()
                 )
                 .roles(
-                        user.getRole().name()
+                        user.getRole()
+                                .name()
                 )
                 .build();
     }

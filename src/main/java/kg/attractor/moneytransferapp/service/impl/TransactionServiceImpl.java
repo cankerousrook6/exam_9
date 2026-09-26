@@ -1,12 +1,16 @@
 package kg.attractor.moneytransferapp.service.impl;
 
 import kg.attractor.moneytransferapp.model.Account;
+import kg.attractor.moneytransferapp.model.ServiceAccount;
+import kg.attractor.moneytransferapp.model.ServiceProvider;
 import kg.attractor.moneytransferapp.model.Transaction;
 import kg.attractor.moneytransferapp.model.User;
 import kg.attractor.moneytransferapp.model.enums.CurrencyType;
 import kg.attractor.moneytransferapp.model.enums.TransactionStatus;
 import kg.attractor.moneytransferapp.model.enums.TransactionType;
 import kg.attractor.moneytransferapp.repository.AccountRepository;
+import kg.attractor.moneytransferapp.repository.ServiceAccountRepository;
+import kg.attractor.moneytransferapp.repository.ServiceProviderRepository;
 import kg.attractor.moneytransferapp.repository.TransactionRepository;
 import kg.attractor.moneytransferapp.service.AccountService;
 import kg.attractor.moneytransferapp.service.TransactionService;
@@ -32,6 +36,8 @@ public class TransactionServiceImpl
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
+    private final ServiceAccountRepository serviceAccountRepository;
+    private final ServiceProviderRepository serviceProviderRepository;
 
     @Override
     @Transactional
@@ -42,9 +48,7 @@ public class TransactionServiceImpl
 
         Account account =
                 accountRepository
-                        .findByAccountNumber(
-                                accountNumber
-                        )
+                        .findByAccountNumber(accountNumber)
                         .orElseThrow(
                                 () ->
                                         new IllegalArgumentException(
@@ -57,44 +61,22 @@ public class TransactionServiceImpl
                         .add(amount)
         );
 
-        accountRepository.save(
-                account
-        );
+        accountRepository.save(account);
 
         Transaction transaction =
                 Transaction.builder()
-                        .type(
-                                TransactionType.TOP_UP
-                        )
-                        .status(
-                                TransactionStatus.COMPLETED
-                        )
-                        .amount(
-                                amount
-                        )
-                        .receivedAmount(
-                                amount
-                        )
-                        .currency(
-                                account.getCurrency()
-                        )
-                        .exchangeRate(
-                                BigDecimal.ONE
-                        )
-                        .createdAt(
-                                LocalDateTime.now()
-                        )
-                        .receiverAccount(
-                                account
-                        )
-                        .description(
-                                "transaction.topUp"
-                        )
+                        .type(TransactionType.TOP_UP)
+                        .status(TransactionStatus.COMPLETED)
+                        .amount(amount)
+                        .receivedAmount(amount)
+                        .currency(account.getCurrency())
+                        .exchangeRate(BigDecimal.ONE)
+                        .createdAt(LocalDateTime.now())
+                        .receiverAccount(account)
+                        .description("transaction.topUp")
                         .build();
 
-        transactionRepository.save(
-                transaction
-        );
+        transactionRepository.save(transaction);
 
         log.info(
                 "Account {} topped up. Amount={}",
@@ -133,14 +115,13 @@ public class TransactionServiceImpl
                         );
 
         if (
-                sender.getId()
-                        .equals(
-                                receiver.getId()
-                        )
+                receiver.getUser()
+                        .getId()
+                        .equals(user.getId())
         ) {
 
             throw new IllegalArgumentException(
-                    "transfer.sameAccount"
+                    "transfer.ownAccount"
             );
         }
 
@@ -162,9 +143,7 @@ public class TransactionServiceImpl
                 );
 
         BigDecimal receivedAmount =
-                amount.multiply(
-                                exchangeRate
-                        )
+                amount.multiply(exchangeRate)
                         .setScale(
                                 2,
                                 RoundingMode.HALF_UP
@@ -184,13 +163,11 @@ public class TransactionServiceImpl
                 ) >= 0
         ) {
 
-            status =
-                    TransactionStatus.PENDING;
+            status = TransactionStatus.PENDING;
 
         } else {
 
-            status =
-                    TransactionStatus.COMPLETED;
+            status = TransactionStatus.COMPLETED;
 
             sender.setBalance(
                     sender.getBalance()
@@ -199,57 +176,28 @@ public class TransactionServiceImpl
 
             receiver.setBalance(
                     receiver.getBalance()
-                            .add(
-                                    receivedAmount
-                            )
+                            .add(receivedAmount)
             );
 
-            accountRepository.save(
-                    sender
-            );
-
-            accountRepository.save(
-                    receiver
-            );
+            accountRepository.save(sender);
+            accountRepository.save(receiver);
         }
 
         Transaction transaction =
                 Transaction.builder()
-                        .type(
-                                TransactionType.TRANSFER
-                        )
-                        .status(
-                                status
-                        )
-                        .amount(
-                                amount
-                        )
-                        .receivedAmount(
-                                receivedAmount
-                        )
-                        .currency(
-                                sender.getCurrency()
-                        )
-                        .exchangeRate(
-                                exchangeRate
-                        )
-                        .createdAt(
-                                LocalDateTime.now()
-                        )
-                        .senderAccount(
-                                sender
-                        )
-                        .receiverAccount(
-                                receiver
-                        )
-                        .description(
-                                "transaction.transfer"
-                        )
+                        .type(TransactionType.TRANSFER)
+                        .status(status)
+                        .amount(amount)
+                        .receivedAmount(receivedAmount)
+                        .currency(sender.getCurrency())
+                        .exchangeRate(exchangeRate)
+                        .createdAt(LocalDateTime.now())
+                        .senderAccount(sender)
+                        .receiverAccount(receiver)
+                        .description("transaction.transfer")
                         .build();
 
-        transactionRepository.save(
-                transaction
-        );
+        transactionRepository.save(transaction);
 
         log.info(
                 "Transfer created. Sender={}, receiver={}, amount={}, status={}",
@@ -257,6 +205,99 @@ public class TransactionServiceImpl
                 receiver.getAccountNumber(),
                 amount,
                 status
+        );
+
+        return transaction;
+    }
+
+    @Override
+    @Transactional
+    public Transaction payService(
+            User user,
+            Long senderAccountId,
+            Long providerId,
+            String requisite,
+            BigDecimal amount
+    ) {
+
+        Account sender =
+                accountService.getByIdAndUser(
+                        senderAccountId,
+                        user
+                );
+
+        ServiceProvider provider =
+                serviceProviderRepository
+                        .findById(providerId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "service.providerNotFound"
+                                        )
+                        );
+
+        ServiceAccount serviceAccount =
+                serviceAccountRepository
+                        .findByProviderAndRequisite(
+                                provider,
+                                requisite
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "service.requisiteNotFound"
+                                        )
+                        );
+
+        if (
+                sender.getBalance()
+                        .compareTo(amount)
+                        < 0
+        ) {
+
+            throw new IllegalArgumentException(
+                    "transfer.notEnoughMoney"
+            );
+        }
+
+        sender.setBalance(
+                sender.getBalance()
+                        .subtract(amount)
+        );
+
+        serviceAccount.setBalance(
+                serviceAccount.getBalance()
+                        .add(amount)
+        );
+
+        accountRepository.save(sender);
+        serviceAccountRepository.save(serviceAccount);
+
+        Transaction transaction =
+                Transaction.builder()
+                        .type(TransactionType.SERVICE_PAYMENT)
+                        .status(TransactionStatus.COMPLETED)
+                        .amount(amount)
+                        .receivedAmount(amount)
+                        .currency(sender.getCurrency())
+                        .exchangeRate(BigDecimal.ONE)
+                        .createdAt(LocalDateTime.now())
+                        .senderAccount(sender)
+                        .description(
+                                provider.getName()
+                                        + " "
+                                        + requisite
+                        )
+                        .build();
+
+        transactionRepository.save(transaction);
+
+        log.info(
+                "User {} paid service {}. Requisite={}, amount={}",
+                user.getUsername(),
+                provider.getName(),
+                requisite,
+                amount
         );
 
         return transaction;
@@ -360,21 +401,14 @@ public class TransactionServiceImpl
                         )
         );
 
-        accountRepository.save(
-                sender
-        );
-
-        accountRepository.save(
-                receiver
-        );
+        accountRepository.save(sender);
+        accountRepository.save(receiver);
 
         transaction.setStatus(
                 TransactionStatus.COMPLETED
         );
 
-        transactionRepository.save(
-                transaction
-        );
+        transactionRepository.save(transaction);
 
         log.info(
                 "Transfer {} approved and completed",
@@ -408,9 +442,7 @@ public class TransactionServiceImpl
                                                 || !transaction
                                                 .getCreatedAt()
                                                 .toLocalDate()
-                                                .isBefore(
-                                                        dateFrom
-                                                )
+                                                .isBefore(dateFrom)
                         )
                         .filter(
                                 transaction ->
@@ -418,24 +450,21 @@ public class TransactionServiceImpl
                                                 || !transaction
                                                 .getCreatedAt()
                                                 .toLocalDate()
-                                                .isAfter(
-                                                        dateTo
-                                                )
+                                                .isAfter(dateTo)
                         )
                         .toList();
 
-        if (
-                "currency".equals(sort)
-        ) {
+        if ("currency".equals(sort)) {
 
             return transactions
                     .stream()
                     .sorted(
                             Comparator.comparing(
                                     transaction ->
-                                            transaction
-                                                    .getCurrency()
-                                                    .name()
+                                            getCurrencyForUser(
+                                                    transaction,
+                                                    user
+                                            )
                             )
                     )
                     .toList();
@@ -449,6 +478,41 @@ public class TransactionServiceImpl
                         ).reversed()
                 )
                 .toList();
+    }
+
+    private String getCurrencyForUser(
+            Transaction transaction,
+            User user
+    ) {
+
+        if (
+                transaction.getSenderAccount() != null
+                        && transaction
+                        .getSenderAccount()
+                        .getUser()
+                        .getId()
+                        .equals(user.getId())
+        ) {
+
+            return transaction
+                    .getSenderAccount()
+                    .getCurrency()
+                    .name();
+        }
+
+        if (
+                transaction.getReceiverAccount() != null
+        ) {
+
+            return transaction
+                    .getReceiverAccount()
+                    .getCurrency()
+                    .name();
+        }
+
+        return transaction
+                .getCurrency()
+                .name();
     }
 
     private BigDecimal getExchangeRate(

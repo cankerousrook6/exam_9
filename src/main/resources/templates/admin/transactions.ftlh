@@ -9,20 +9,6 @@
             <@spring.message "admin.transactions.title"/>
         </h1>
 
-        <a
-                href="/admin/transactions"
-                class="btn"
-        >
-            <@spring.message "admin.transactions.all"/>
-        </a>
-
-        <a
-                href="/admin/transactions/pending"
-                class="btn"
-        >
-            <@spring.message "admin.transactions.pending"/>
-        </a>
-
     </div>
 
 
@@ -69,6 +55,18 @@
 
                 <#list transactions as transaction>
 
+                    <#assign
+                            typeKey =
+                            "transaction.type."
+                            + transaction.type?string?lower_case
+                    >
+
+                    <#assign
+                            statusKey =
+                            "transaction.status."
+                            + transaction.status?string?lower_case
+                    >
+
                     <tr>
 
                         <td>
@@ -76,7 +74,7 @@
                         </td>
 
                         <td>
-                            ${transaction.type}
+                            <@spring.message typeKey/>
                         </td>
 
                         <td>
@@ -88,7 +86,7 @@
                         </td>
 
                         <td>
-                            ${transaction.status}
+                            <@spring.message statusKey/>
                         </td>
 
                         <td>

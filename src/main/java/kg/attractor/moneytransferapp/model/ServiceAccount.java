@@ -1,7 +1,6 @@
 package kg.attractor.moneytransferapp.model;
 
 import jakarta.persistence.*;
-import kg.attractor.moneytransferapp.model.enums.ServiceProviderType;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,9 +15,9 @@ import java.math.BigDecimal;
         name = "service_accounts",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uq_service_provider_requisite",
+                        name = "uq_service_account_provider_requisite",
                         columnNames = {
-                                "provider",
+                                "provider_id",
                                 "requisite"
                         }
                 )
@@ -29,13 +28,6 @@ public class ServiceAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(
-            nullable = false,
-            length = 30
-    )
-    private ServiceProviderType provider;
 
     @Column(
             nullable = false,
@@ -49,4 +41,11 @@ public class ServiceAccount {
             scale = 2
     )
     private BigDecimal balance;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "provider_id",
+            nullable = false
+    )
+    private ServiceProvider provider;
 }

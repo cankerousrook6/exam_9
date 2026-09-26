@@ -1,8 +1,8 @@
 package kg.attractor.moneytransferapp.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 import kg.attractor.moneytransferapp.model.enums.UserRole;
+import lombok.*;
 
 @Getter
 @Setter
@@ -14,7 +14,9 @@ import kg.attractor.moneytransferapp.model.enums.UserRole;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
     @Column(
@@ -29,7 +31,9 @@ public class User {
     )
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(
+            EnumType.STRING
+    )
     @Column(
             nullable = false,
             length = 20

@@ -12,7 +12,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -23,74 +22,101 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(
-                        auth -> auth
+                        auth ->
+                                auth
+                                        .requestMatchers(
+                                                "/",
+                                                "/top-up",
+                                                "/register",
+                                                "/login",
+                                                "/css/**",
+                                                "/js/**",
+                                                "/h2-console/**"
+                                        )
+                                        .permitAll()
 
-                                .requestMatchers(
-                                        "/",
-                                        "/top-up",
-                                        "/register",
-                                        "/login",
-                                        "/css/**",
-                                        "/js/**",
-                                        "/h2-console/**"
-                                )
-                                .permitAll()
+                                        .requestMatchers(
+                                                "/admin/**"
+                                        )
+                                        .hasRole("ADMIN")
 
-                                .requestMatchers(
-                                        "/admin/**"
-                                )
-                                .hasRole("ADMIN")
-
-                                .anyRequest()
-                                .authenticated()
+                                        .anyRequest()
+                                        .authenticated()
                 )
 
                 .formLogin(
-                        form -> form
+                        form ->
+                                form
+                                        .loginPage("/login")
+                                        .loginProcessingUrl("/login")
+                                        .usernameParameter("username")
+                                        .passwordParameter("password")
+                                        .successHandler(
+                                                (
+                                                        request,
+                                                        response,
+                                                        authentication
+                                                ) -> {
 
-                                .loginPage(
-                                        "/login"
-                                )
+                                                    boolean admin =
+                                                            authentication
+                                                                    .getAuthorities()
+                                                                    .stream()
+                                                                    .anyMatch(
+                                                                            authority ->
+                                                                                    authority
+                                                                                            .getAuthority()
+                                                                                            .equals(
+                                                                                                    "ROLE_ADMIN"
+                                                                                            )
+                                                                    );
 
-                                .usernameParameter(
-                                        "username"
-                                )
-
-                                .passwordParameter(
-                                        "password"
-                                )
-
-                                .defaultSuccessUrl(
-                                        "/profile",
-                                        true
-                                )
-
-                                .permitAll()
+                                                    if (admin) {
+                                                        response.sendRedirect(
+                                                                "/admin/transactions"
+                                                        );
+                                                    } else {
+                                                        response.sendRedirect(
+                                                                "/profile"
+                                                        );
+                                                    }
+                                                }
+                                        )
+                                        .permitAll()
                 )
 
                 .logout(
-                        logout -> logout
+                        logout ->
+                                logout
+                                        .logoutSuccessUrl(
+                                                "/login?logout"
+                                        )
+                                        .permitAll()
+                )
 
-                                .logoutSuccessUrl(
-                                        "/login?logout"
-                                )
-
-                                .permitAll()
+                .exceptionHandling(
+                        exception ->
+                                exception
+                                        .accessDeniedPage(
+                                                "/access-denied"
+                                        )
                 )
 
                 .csrf(
-                        csrf -> csrf
-                                .ignoringRequestMatchers(
-                                        "/h2-console/**"
-                                )
+                        csrf ->
+                                csrf
+                                        .ignoringRequestMatchers(
+                                                "/h2-console/**"
+                                        )
                 )
 
                 .headers(
-                        headers -> headers
-                                .frameOptions(
-                                        frame ->
-                                                frame.sameOrigin()
-                                )
+                        headers ->
+                                headers
+                                        .frameOptions(
+                                                frame ->
+                                                        frame.sameOrigin()
+                                        )
                 );
 
         return http.build();

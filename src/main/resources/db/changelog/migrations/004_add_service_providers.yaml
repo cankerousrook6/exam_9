@@ -1,0 +1,138 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 004
+      author: student
+
+      changes:
+
+        - createTable:
+            tableName: service_providers
+
+            columns:
+
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: varchar(100)
+
+                  constraints:
+                    nullable: false
+                    unique: true
+
+
+        - insert:
+            tableName: service_providers
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 1
+
+              - column:
+                  name: name
+                  value: MegaCom
+
+
+        - insert:
+            tableName: service_providers
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 2
+
+              - column:
+                  name: name
+                  value: Beeline
+
+
+        - insert:
+            tableName: service_providers
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 3
+
+              - column:
+                  name: name
+                  value: Saima
+
+
+        - addColumn:
+            tableName: service_accounts
+
+            columns:
+
+              - column:
+                  name: provider_id
+                  type: bigint
+
+
+        - sql:
+            sql: >
+              UPDATE service_accounts
+              SET provider_id = 1
+              WHERE provider = 'MEGACOM'
+
+
+        - sql:
+            sql: >
+              UPDATE service_accounts
+              SET provider_id = 2
+              WHERE provider = 'BEELINE'
+
+
+        - sql:
+            sql: >
+              UPDATE service_accounts
+              SET provider_id = 3
+              WHERE provider = 'SAIMA'
+
+
+        - addNotNullConstraint:
+            tableName: service_accounts
+            columnName: provider_id
+            columnDataType: bigint
+
+
+        - addForeignKeyConstraint:
+            baseTableName: service_accounts
+            baseColumnNames: provider_id
+            referencedTableName: service_providers
+            referencedColumnNames: id
+            constraintName: fk_service_account_provider
+
+
+        - dropUniqueConstraint:
+            tableName: service_accounts
+            constraintName: uq_service_provider_requisite
+
+
+        - addUniqueConstraint:
+            tableName: service_accounts
+            columnNames: provider_id, requisite
+            constraintName: uq_service_account_provider_requisite
+
+
+        - dropColumn:
+            tableName: service_accounts
+            columnName: provider
+
+
+        - sql:
+            sql: >
+              ALTER TABLE service_providers
+              ALTER COLUMN id RESTART WITH 4

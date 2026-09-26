@@ -21,6 +21,14 @@ public interface TransactionService {
             BigDecimal amount
     );
 
+    Transaction payService(
+            User user,
+            Long senderAccountId,
+            Long providerId,
+            String requisite,
+            BigDecimal amount
+    );
+
     List<Transaction> getAll();
 
     List<Transaction> getPending();

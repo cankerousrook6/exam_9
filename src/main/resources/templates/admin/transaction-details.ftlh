@@ -3,6 +3,18 @@
 
 <@main.layout>
 
+    <#assign
+            typeKey =
+            "transaction.type."
+            + transaction.type?string?lower_case
+    >
+
+    <#assign
+            statusKey =
+            "transaction.status."
+            + transaction.status?string?lower_case
+    >
+
     <div class="card">
 
         <h1>
@@ -30,41 +42,49 @@
 
 
         <p>
+
             <strong>
                 <@spring.message "admin.transactions.type"/>:
             </strong>
 
-            ${transaction.type}
+            <@spring.message typeKey/>
+
         </p>
 
 
         <p>
+
             <strong>
                 <@spring.message "admin.transactions.status"/>:
             </strong>
 
-            ${transaction.status}
+            <@spring.message statusKey/>
+
         </p>
 
 
         <p>
+
             <strong>
                 <@spring.message "admin.transactions.amount"/>:
             </strong>
 
             ${transaction.amount?string["0.00"]}
             ${transaction.currency}
+
         </p>
 
 
         <#if transaction.senderAccount??>
 
             <p>
+
                 <strong>
                     <@spring.message "admin.details.sender"/>:
                 </strong>
 
                 ${transaction.senderAccount.accountNumber}
+
             </p>
 
         </#if>
@@ -73,11 +93,13 @@
         <#if transaction.receiverAccount??>
 
             <p>
+
                 <strong>
                     <@spring.message "admin.details.receiver"/>:
                 </strong>
 
                 ${transaction.receiverAccount.accountNumber}
+
             </p>
 
         </#if>
@@ -86,6 +108,7 @@
         <#if transaction.receivedAmount??>
 
             <p>
+
                 <strong>
                     <@spring.message "admin.details.received"/>:
                 </strong>
@@ -104,22 +127,26 @@
         <#if transaction.exchangeRate??>
 
             <p>
+
                 <strong>
                     <@spring.message "admin.details.rate"/>:
                 </strong>
 
                 ${transaction.exchangeRate}
+
             </p>
 
         </#if>
 
 
         <p>
+
             <strong>
                 <@spring.message "admin.transactions.date"/>:
             </strong>
 
             ${transaction.createdAt}
+
         </p>
 
 

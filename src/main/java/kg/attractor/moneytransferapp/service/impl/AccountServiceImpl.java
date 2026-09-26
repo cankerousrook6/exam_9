@@ -1,7 +1,25 @@
 package kg.attractor.moneytransferapp.service.impl;
-import kg.attractor.moneytransferapp.model.Account; import kg.attractor.moneytransferapp.model.User; import kg.attractor.moneytransferapp.model.enums.CurrencyType; import kg.attractor.moneytransferapp.repository.AccountRepository; import kg.attractor.moneytransferapp.service.AccountService; import lombok.RequiredArgsConstructor; import lombok.extern.slf4j.Slf4j; import org.springframework.stereotype.Service;
-import java.math.BigDecimal; import java.util.List; import java.util.NoSuchElementException; import java.util.Random;
-@Slf4j @Service @RequiredArgsConstructor public class AccountServiceImpl implements AccountService {
+
+import kg.attractor.moneytransferapp.model.Account;
+import kg.attractor.moneytransferapp.model.User;
+import kg.attractor.moneytransferapp.model.enums.CurrencyType;
+import kg.attractor.moneytransferapp.repository.AccountRepository;
+import kg.attractor.moneytransferapp.service.AccountService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AccountServiceImpl
+        implements AccountService {
+
     private final AccountRepository accountRepository;
 
     @Override
@@ -11,16 +29,18 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
     ) {
 
         if (
-                accountRepository.countByUser(user) >= 3
+                accountRepository.countByUser(
+                        user
+                ) >= 3
         ) {
 
             log.warn(
-                    "User {} tried to create more than 3 accounts",
+                    "User {} reached account limit",
                     user.getUsername()
             );
 
             throw new IllegalArgumentException(
-                    "You can have no more than 3 accounts"
+                    "account.limit"
             );
         }
 
@@ -32,14 +52,8 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
                         )
         ) {
 
-            log.warn(
-                    "User {} already has account in {}",
-                    user.getUsername(),
-                    currency
-            );
-
             throw new IllegalArgumentException(
-                    "Account with this currency already exists"
+                    "account.currencyExists"
             );
         }
 
@@ -48,15 +62,11 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
                         .accountNumber(
                                 generateAccountNumber()
                         )
-                        .currency(
-                                currency
-                        )
+                        .currency(currency)
                         .balance(
                                 BigDecimal.ZERO
                         )
-                        .user(
-                                user
-                        )
+                        .user(user)
                         .build();
 
         accountRepository.save(
@@ -89,7 +99,7 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
                 .orElseThrow(
                         () ->
                                 new NoSuchElementException(
-                                        "Account not found"
+                                        "account.notFound"
                                 )
                 );
     }
@@ -112,7 +122,7 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
         ) {
 
             throw new IllegalArgumentException(
-                    "This account does not belong to user"
+                    "account.accessDenied"
             );
         }
 
@@ -124,28 +134,25 @@ import java.math.BigDecimal; import java.util.List; import java.util.NoSuchEleme
         Random random =
                 new Random();
 
-        String accountNumber;
+        String number;
 
         do {
 
-            int number =
-                    100000
-                            + random.nextInt(
-                            900000
-                    );
-
-            accountNumber =
+            number =
                     String.valueOf(
-                            number
+                            100000
+                                    + random.nextInt(
+                                    900000
+                            )
                     );
 
         } while (
                 accountRepository
                         .existsByAccountNumber(
-                                accountNumber
+                                number
                         )
         );
 
-        return accountNumber;
+        return number;
     }
 }

@@ -23,24 +23,24 @@ public class TransactionController {
     @GetMapping("/transactions")
     public String transactions(
             Principal principal,
-            @RequestParam(
-                    required = false
-            )
+
+            @RequestParam(required = false)
             @DateTimeFormat(
                     iso = DateTimeFormat.ISO.DATE
             )
             LocalDate dateFrom,
-            @RequestParam(
-                    required = false
-            )
+
+            @RequestParam(required = false)
             @DateTimeFormat(
                     iso = DateTimeFormat.ISO.DATE
             )
             LocalDate dateTo,
+
             @RequestParam(
                     defaultValue = "date"
             )
             String sort,
+
             Model model
     ) {
 
@@ -66,13 +66,17 @@ public class TransactionController {
         );
 
         model.addAttribute(
-                "dateFrom",
-                dateFrom
+                "dateFromValue",
+                dateFrom != null
+                        ? dateFrom.toString()
+                        : ""
         );
 
         model.addAttribute(
-                "dateTo",
-                dateTo
+                "dateToValue",
+                dateTo != null
+                        ? dateTo.toString()
+                        : ""
         );
 
         model.addAttribute(

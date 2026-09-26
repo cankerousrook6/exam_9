@@ -44,28 +44,26 @@ public class AuthController {
 
             bindingResult.rejectValue(
                     "username",
-                    "username.exists",
-                    "{register.username.exists}"
+                    "register.username.exists"
             );
         }
 
-        if (
-                bindingResult.hasErrors()
-        ) {
-
+        if (bindingResult.hasErrors()) {
             return "auth/register";
         }
 
-        userService.register(
-                dto
-        );
+        userService.register(dto);
 
         return "redirect:/login?registered";
     }
 
     @GetMapping("/login")
-    public String loginPage() {
-
+    public String login() {
         return "auth/login";
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
     }
 }

@@ -6,27 +6,18 @@
     <div class="form-card">
 
         <h1>
-            <@spring.message "transfer.title"/>
+            <@spring.message "service.title"/>
         </h1>
 
         <p>
-            <@spring.message "transfer.description"/>
+            <@spring.message "service.description"/>
         </p>
 
 
         <#if success??>
 
             <p>
-                <@spring.message "transfer.success"/>
-            </p>
-
-        </#if>
-
-
-        <#if pending??>
-
-            <p>
-                <@spring.message "transfer.pending"/>
+                <@spring.message "service.success"/>
             </p>
 
         </#if>
@@ -44,10 +35,10 @@
         <#if accounts?has_content>
 
             <form
-                    action="/transfer"
+                    action="/services"
                     method="post"
                     class="confirm-form"
-                    data-confirm-message="<@spring.message "transfer.confirm"/>"
+                    data-confirm-message="<@spring.message "service.confirm"/>"
             >
 
                 <#if _csrf??>
@@ -64,7 +55,7 @@
                 <div class="form-group">
 
                     <label for="senderAccountId">
-                        <@spring.message "transfer.sender"/>
+                        <@spring.message "service.sender"/>
                     </label>
 
                     <select
@@ -80,25 +71,23 @@
 
                             <option
                                     value="${account.id}"
-                                    <#if transfer.senderAccountId??
-                                    && transfer.senderAccountId == account.id>
+                                    <#if payment.senderAccountId??
+                                    && payment.senderAccountId == account.id>
                                         selected
                                     </#if>
                             >
-
                                 ${account.accountNumber}
                                 -
                                 ${account.currency}
                                 -
                                 ${account.balance?string["0.00"]}
-
                             </option>
 
                         </#list>
 
                     </select>
 
-                    <@spring.bind "transfer.senderAccountId"/>
+                    <@spring.bind "payment.senderAccountId"/>
                     <@spring.showErrors "<br>" "error"/>
 
                 </div>
@@ -106,19 +95,55 @@
 
                 <div class="form-group">
 
-                    <label for="receiverAccountNumber">
-                        <@spring.message "transfer.receiver"/>
+                    <label for="providerId">
+                        <@spring.message "service.provider"/>
+                    </label>
+
+                    <select
+                            id="providerId"
+                            name="providerId"
+                    >
+
+                        <option value="">
+                            <@spring.message "service.selectProvider"/>
+                        </option>
+
+                        <#list providers as provider>
+
+                            <option
+                                    value="${provider.id}"
+                                    <#if payment.providerId??
+                                    && payment.providerId == provider.id>
+                                        selected
+                                    </#if>
+                            >
+                                ${provider.name}
+                            </option>
+
+                        </#list>
+
+                    </select>
+
+                    <@spring.bind "payment.providerId"/>
+                    <@spring.showErrors "<br>" "error"/>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="requisite">
+                        <@spring.message "service.requisite"/>
                     </label>
 
                     <input
-                            id="receiverAccountNumber"
+                            id="requisite"
                             type="text"
-                            name="receiverAccountNumber"
-                            maxlength="6"
-                            value="${(transfer.receiverAccountNumber)!''}"
+                            name="requisite"
+                            value="${(payment.requisite)!''}"
                     >
 
-                    <@spring.bind "transfer.receiverAccountNumber"/>
+                    <@spring.bind "payment.requisite"/>
                     <@spring.showErrors "<br>" "error"/>
 
                 </div>
@@ -127,7 +152,7 @@
                 <div class="form-group">
 
                     <label for="amount">
-                        <@spring.message "transfer.amount"/>
+                        <@spring.message "service.amount"/>
                     </label>
 
                     <input
@@ -136,17 +161,17 @@
                             name="amount"
                             min="0.01"
                             step="0.01"
-                            value="${(transfer.amount)!''}"
+                            value="${(payment.amount)!''}"
                     >
 
-                    <@spring.bind "transfer.amount"/>
+                    <@spring.bind "payment.amount"/>
                     <@spring.showErrors "<br>" "error"/>
 
                 </div>
 
 
                 <button type="submit">
-                    <@spring.message "transfer.button"/>
+                    <@spring.message "service.button"/>
                 </button>
 
             </form>
@@ -154,7 +179,7 @@
         <#else>
 
             <p>
-                <@spring.message "transfer.noAccounts"/>
+                <@spring.message "service.noAccounts"/>
             </p>
 
         </#if>

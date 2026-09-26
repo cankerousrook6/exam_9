@@ -29,7 +29,7 @@
                         id="dateFrom"
                         type="date"
                         name="dateFrom"
-                        value="${(dateFrom?string['yyyy-MM-dd'])!''}"
+                        value="${dateFromValue!''}"
                 >
 
             </div>
@@ -45,7 +45,7 @@
                         id="dateTo"
                         type="date"
                         name="dateTo"
-                        value="${(dateTo?string['yyyy-MM-dd'])!''}"
+                        value="${dateToValue!''}"
                 >
 
             </div>
@@ -140,6 +140,12 @@
 
                 <#list transactions as transaction>
 
+                    <#assign
+                            typeKey =
+                            "transaction.type."
+                            + transaction.type?string?lower_case
+                    >
+
                     <tr>
 
                         <td>
@@ -148,15 +154,7 @@
 
 
                         <td>
-
-                            <#assign
-                                    typeKey =
-                                    "transaction.type."
-                                    + transaction.type?string?lower_case
-                            >
-
                             <@spring.message typeKey/>
-
                         </td>
 
 
@@ -180,13 +178,9 @@
                             <td>
 
                                 <#if transaction.receiverAccount??>
-
                                     ${transaction.receiverAccount.currency}
-
                                 <#else>
-
                                     ${transaction.currency}
-
                                 </#if>
 
                             </td>
@@ -196,12 +190,17 @@
 
                         <td>
 
-                            <#if transaction.senderAccount??
+                            <#if transaction.type?string == "SERVICE_PAYMENT">
+
+                                ${transaction.description}
+
+                            <#elseif transaction.senderAccount??
                             && transaction.senderAccount.user.id == userId>
 
                                 <#if transaction.receiverAccount??>
 
                                     ${transaction.receiverAccount.user.username}
+                                    (${transaction.receiverAccount.accountNumber})
 
                                 <#else>
 
@@ -212,6 +211,7 @@
                             <#elseif transaction.senderAccount??>
 
                                 ${transaction.senderAccount.user.username}
+                                (${transaction.senderAccount.accountNumber})
 
                             <#else>
 

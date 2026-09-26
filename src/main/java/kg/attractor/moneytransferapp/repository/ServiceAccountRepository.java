@@ -1,7 +1,7 @@
 package kg.attractor.moneytransferapp.repository;
 
 import kg.attractor.moneytransferapp.model.ServiceAccount;
-import kg.attractor.moneytransferapp.model.enums.ServiceProviderType;
+import kg.attractor.moneytransferapp.model.ServiceProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ public interface ServiceAccountRepository
         extends JpaRepository<ServiceAccount, Long> {
 
     Optional<ServiceAccount> findByProviderAndRequisite(
-            ServiceProviderType provider,
+            ServiceProvider provider,
             String requisite
     );
 }

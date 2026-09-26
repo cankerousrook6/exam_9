@@ -13,21 +13,90 @@
             <@spring.message "home.description"/>
         </p>
 
-        <a
-                href="/login"
-                class="btn"
-        >
-            <@spring.message "home.login"/>
-        </a>
+        <#if user??>
 
-        <a
-                href="/register"
-                class="btn"
-        >
-            <@spring.message "home.register"/>
-        </a>
+            <p>
+                <@spring.message "profile.user"/>:
+
+                <strong>
+                    ${user.username}
+                </strong>
+            </p>
+
+        </#if>
 
     </div>
+
+
+    <#if user??>
+
+        <div class="card">
+
+            <h2>
+                <@spring.message "profile.accounts"/>
+            </h2>
+
+            <#if accounts?has_content>
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            <@spring.message "profile.accountNumber"/>
+                        </th>
+
+                        <th>
+                            <@spring.message "profile.currency"/>
+                        </th>
+
+                        <th>
+                            <@spring.message "profile.balance"/>
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <#list accounts as account>
+
+                        <tr>
+
+                            <td>
+                                ${account.accountNumber}
+                            </td>
+
+                            <td>
+                                ${account.currency}
+                            </td>
+
+                            <td>
+                                ${account.balance?string["0.00"]}
+                            </td>
+
+                        </tr>
+
+                    </#list>
+
+                    </tbody>
+
+                </table>
+
+            <#else>
+
+                <p>
+                    <@spring.message "profile.noAccounts"/>
+                </p>
+
+            </#if>
+
+        </div>
+
+    </#if>
 
 
     <div class="form-card">
@@ -85,8 +154,8 @@
                         id="accountNumber"
                         type="text"
                         name="accountNumber"
-                        value="${(topUp.accountNumber)!''}"
                         maxlength="6"
+                        value="${(topUp.accountNumber)!''}"
                 >
 
                 <@spring.bind "topUp.accountNumber"/>

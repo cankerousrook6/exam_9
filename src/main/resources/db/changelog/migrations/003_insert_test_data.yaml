@@ -1,0 +1,189 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 003
+      author: student
+
+      # Test accounts:
+      # admin / admin123
+      # alice / user123
+      # bob / user123
+
+      changes:
+
+        - insert:
+            tableName: users
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 1
+
+              - column:
+                  name: username
+                  value: admin
+
+              - column:
+                  name: password
+                  value: "$2y$10$XZ/XPUQF0w2aAQcB82bkLe4adJl7aIQjy/CxsLQXG7xDfgEzW9GD."
+
+              - column:
+                  name: role
+                  value: ADMIN
+
+
+        - insert:
+            tableName: users
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 2
+
+              - column:
+                  name: username
+                  value: alice
+
+              - column:
+                  name: password
+                  value: "$2y$10$1EZhy4hpv683TSn4HhP57eTGQQKEUo5FOFkQFdEHXSNJY.NIElXjC"
+
+              - column:
+                  name: role
+                  value: USER
+
+
+        - insert:
+            tableName: users
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 3
+
+              - column:
+                  name: username
+                  value: bob
+
+              - column:
+                  name: password
+                  value: "$2y$10$1EZhy4hpv683TSn4HhP57eTGQQKEUo5FOFkQFdEHXSNJY.NIElXjC"
+
+              - column:
+                  name: role
+                  value: USER
+
+
+        - insert:
+            tableName: accounts
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 1
+
+              - column:
+                  name: account_number
+                  value: "100001"
+
+              - column:
+                  name: currency
+                  value: USD
+
+              - column:
+                  name: balance
+                  valueNumeric: 500
+
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+
+
+        - insert:
+            tableName: accounts
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 2
+
+              - column:
+                  name: account_number
+                  value: "100002"
+
+              - column:
+                  name: currency
+                  value: KGS
+
+              - column:
+                  name: balance
+                  valueNumeric: 10000
+
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+
+
+        - insert:
+            tableName: accounts
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 3
+
+              - column:
+                  name: account_number
+                  value: "200001"
+
+              - column:
+                  name: currency
+                  value: EUR
+
+              - column:
+                  name: balance
+                  valueNumeric: 250
+
+              - column:
+                  name: user_id
+                  valueNumeric: 3
+
+
+        - insert:
+            tableName: accounts
+
+            columns:
+
+              - column:
+                  name: id
+                  valueNumeric: 4
+
+              - column:
+                  name: account_number
+                  value: "200002"
+
+              - column:
+                  name: currency
+                  value: USD
+
+              - column:
+                  name: balance
+                  valueNumeric: 100
+
+              - column:
+                  name: user_id
+                  valueNumeric: 3
+
+
+        - sql:
+            sql: ALTER TABLE users ALTER COLUMN id RESTART WITH 4
+
+
+        - sql:
+            sql: ALTER TABLE accounts ALTER COLUMN id RESTART WITH 5

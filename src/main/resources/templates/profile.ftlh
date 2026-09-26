@@ -97,7 +97,6 @@
             <@spring.message "profile.accounts"/>
         </h2>
 
-
         <#if accounts?has_content>
 
             <table>
@@ -121,7 +120,6 @@
                 </tr>
 
                 </thead>
-
 
                 <tbody>
 
@@ -153,6 +151,87 @@
 
             <p>
                 <@spring.message "profile.noAccounts"/>
+            </p>
+
+        </#if>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            <@spring.message "profile.completedTransactions"/>
+        </h2>
+
+        <#if transactions?has_content>
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>
+                        <@spring.message "transactions.date"/>
+                    </th>
+
+                    <th>
+                        <@spring.message "transactions.type"/>
+                    </th>
+
+                    <th>
+                        <@spring.message "transactions.amount"/>
+                    </th>
+
+                    <th>
+                        <@spring.message "transactions.currency"/>
+                    </th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <#list transactions as transaction>
+
+                    <#assign
+                            typeKey =
+                            "transaction.type."
+                            + transaction.type?string?lower_case
+                    >
+
+                    <tr>
+
+                        <td>
+                            ${transaction.createdAt}
+                        </td>
+
+                        <td>
+                            <@spring.message typeKey/>
+                        </td>
+
+                        <td>
+                            ${transaction.amount?string["0.00"]}
+                        </td>
+
+                        <td>
+                            ${transaction.currency}
+                        </td>
+
+                    </tr>
+
+                </#list>
+
+                </tbody>
+
+            </table>
+
+        <#else>
+
+            <p>
+                <@spring.message "transactions.empty"/>
             </p>
 
         </#if>

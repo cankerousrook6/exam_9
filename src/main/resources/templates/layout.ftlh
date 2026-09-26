@@ -3,7 +3,6 @@
 <#macro layout>
 
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -28,39 +27,116 @@
 
 <body>
 
-<header>
+<header class="header">
 
-    <nav>
+    <div class="nav-container">
 
-        <a href="/">
-            <@spring.message "nav.home"/>
-        </a>
+        <div class="nav-left">
 
-        <a href="/profile">
-            <@spring.message "nav.profile"/>
-        </a>
+            <a
+                    href="/"
+                    class="nav-logo"
+            >
+                MoneyTransferApp
+            </a>
 
-        <a href="/transactions">
-            <@spring.message "nav.transactions"/>
-        </a>
 
-        <a href="/transfer">
-            <@spring.message "nav.transfer"/>
-        </a>
+            <#if SPRING_SECURITY_CONTEXT??>
 
-        <a href="/services">
-            <@spring.message "nav.services"/>
-        </a>
+                <#if isAdmin?? && isAdmin>
 
-        <a href="?lang=ru">
-            <@spring.message "language.ru"/>
-        </a>
+                    <a href="/admin/transactions">
+                        <@spring.message "nav.adminTransactions"/>
+                    </a>
 
-        <a href="?lang=en">
-            <@spring.message "language.en"/>
-        </a>
+                    <a href="/admin/transactions/pending">
+                        <@spring.message "nav.pendingTransactions"/>
+                    </a>
 
-    </nav>
+                <#else>
+
+                    <a href="/profile">
+                        <@spring.message "nav.profile"/>
+                    </a>
+
+                    <a href="/transactions">
+                        <@spring.message "nav.transactions"/>
+                    </a>
+
+                    <a href="/transfer">
+                        <@spring.message "nav.transfer"/>
+                    </a>
+
+                    <a href="/services">
+                        <@spring.message "nav.services"/>
+                    </a>
+
+                </#if>
+
+            </#if>
+
+        </div>
+
+
+        <div class="nav-right">
+
+            <a href="?lang=ru">
+                RU
+            </a>
+
+            <a href="?lang=en">
+                EN
+            </a>
+
+
+            <#if SPRING_SECURITY_CONTEXT??>
+
+                <form
+                        action="/logout"
+                        method="post"
+                        class="logout-form"
+                >
+
+                    <#if _csrf??>
+
+                        <input
+                                type="hidden"
+                                name="${_csrf.parameterName}"
+                                value="${_csrf.token}"
+                        >
+
+                    </#if>
+
+                    <button
+                            type="submit"
+                            class="nav-button"
+                    >
+                        <@spring.message "nav.logout"/>
+                    </button>
+
+                </form>
+
+            <#else>
+
+                <a
+                        href="/login"
+                        class="nav-button"
+                >
+                    <@spring.message "nav.login"/>
+                </a>
+
+                <a
+                        href="/register"
+                        class="nav-button"
+                >
+                    <@spring.message "nav.register"/>
+                </a>
+
+            </#if>
+
+        </div>
+
+    </div>
 
 </header>
 
@@ -70,6 +146,9 @@
     <#nested>
 
 </main>
+
+
+<script src="/js/main.js"></script>
 
 </body>
 
