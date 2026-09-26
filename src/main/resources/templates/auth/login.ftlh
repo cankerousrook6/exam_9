@@ -1,18 +1,19 @@
 <#import "../layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 
 <@main.layout>
 
     <div class="form-card">
 
         <h1>
-            Вход
+            <@spring.message "login.title"/>
         </h1>
 
 
         <#if RequestParameters.error??>
 
             <p class="error">
-                Неверный логин или пароль
+                <@spring.message "login.error"/>
             </p>
 
         </#if>
@@ -21,7 +22,7 @@
         <#if RequestParameters.registered??>
 
             <p>
-                Регистрация прошла успешно
+                <@spring.message "login.registered"/>
             </p>
 
         </#if>
@@ -30,7 +31,7 @@
         <#if RequestParameters.logout??>
 
             <p>
-                Вы вышли из аккаунта
+                <@spring.message "login.logout"/>
             </p>
 
         </#if>
@@ -55,7 +56,7 @@
             <div class="form-group">
 
                 <label for="username">
-                    Логин
+                    <@spring.message "login.username"/>
                 </label>
 
                 <input
@@ -71,7 +72,7 @@
             <div class="form-group">
 
                 <label for="password">
-                    Пароль
+                    <@spring.message "login.password"/>
                 </label>
 
                 <input
@@ -85,7 +86,7 @@
 
 
             <button type="submit">
-                Войти
+                <@spring.message "login.button"/>
             </button>
 
         </form>
@@ -93,10 +94,10 @@
 
         <p>
 
-            Нет аккаунта?
+            <@spring.message "login.noAccount"/>
 
             <a href="/register">
-                Зарегистрироваться
+                <@spring.message "login.register"/>
             </a>
 
         </p>

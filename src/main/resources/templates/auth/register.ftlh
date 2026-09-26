@@ -6,8 +6,9 @@
     <div class="form-card">
 
         <h1>
-            Регистрация
+            <@spring.message "register.title"/>
         </h1>
+
 
         <form
                 action="/register"
@@ -28,7 +29,7 @@
             <div class="form-group">
 
                 <label for="username">
-                    Логин
+                    <@spring.message "register.username"/>
                 </label>
 
                 <input
@@ -47,7 +48,7 @@
             <div class="form-group">
 
                 <label for="password">
-                    Пароль
+                    <@spring.message "register.password"/>
                 </label>
 
                 <input
@@ -63,7 +64,7 @@
 
 
             <button type="submit">
-                Зарегистрироваться
+                <@spring.message "register.button"/>
             </button>
 
         </form>
@@ -71,10 +72,10 @@
 
         <p>
 
-            Уже есть аккаунт?
+            <@spring.message "register.haveAccount"/>
 
             <a href="/login">
-                Войти
+                <@spring.message "register.login"/>
             </a>
 
         </p>

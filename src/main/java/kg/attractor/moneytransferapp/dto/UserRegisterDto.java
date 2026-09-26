@@ -9,19 +9,23 @@ import lombok.Setter;
 @Setter
 public class UserRegisterDto {
 
-    @NotBlank(message = "Username is required")
+    @NotBlank(
+            message = "{validation.username.required}"
+    )
     @Size(
             min = 3,
             max = 30,
-            message = "Username must contain from 3 to 30 characters"
+            message = "{validation.username.size}"
     )
     private String username;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(
+            message = "{validation.password.required}"
+    )
     @Size(
             min = 6,
             max = 50,
-            message = "Password must contain from 6 to 50 characters"
+            message = "{validation.password.size}"
     )
     private String password;
 }

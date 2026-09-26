@@ -1,155 +1,162 @@
 <#import "layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
+
 <@main.layout>
-<div class="card">
-
-    <h1>
-        Профиль
-    </h1>
-
-    <p>
-        Пользователь:
-        <strong>
-            ${user.username}
-        </strong>
-    </p>
-
-</div>
-
-
-<#if error??>
 
     <div class="card">
 
-        <p class="error">
-            ${error}
+        <h1>
+            <@spring.message "profile.title"/>
+        </h1>
+
+        <p>
+
+            <@spring.message "profile.user"/>:
+
+            <strong>
+                ${user.username}
+            </strong>
+
         </p>
 
     </div>
 
-</#if>
 
+    <#if error??>
 
-<div class="form-card">
+        <div class="card">
 
-    <h2>
-        Создать счет
-    </h2>
-
-    <form
-            action="/accounts/create"
-            method="post"
-    >
-
-        <#if _csrf??>
-
-            <input
-                    type="hidden"
-                    name="${_csrf.parameterName}"
-                    value="${_csrf.token}"
-            >
-
-        </#if>
-
-
-        <div class="form-group">
-
-            <label for="currency">
-                Валюта
-            </label>
-
-            <select
-                    id="currency"
-                    name="currency"
-                    required
-            >
-
-                <#list currencies as currency>
-
-                    <option value="${currency}">
-                        ${currency}
-                    </option>
-
-                </#list>
-
-            </select>
+            <p class="error">
+                ${error}
+            </p>
 
         </div>
 
-
-        <button type="submit">
-            Создать счет
-        </button>
-
-    </form>
-
-</div>
+    </#if>
 
 
-<div class="card">
+    <div class="form-card">
 
-    <h2>
-        Мои счета
-    </h2>
+        <h2>
+            <@spring.message "profile.createAccount"/>
+        </h2>
 
+        <form
+                action="/accounts/create"
+                method="post"
+        >
 
-    <#if accounts?has_content>
+            <#if _csrf??>
 
-        <table>
+                <input
+                        type="hidden"
+                        name="${_csrf.parameterName}"
+                        value="${_csrf.token}"
+                >
 
-            <thead>
-
-            <tr>
-
-                <th>
-                    Номер счета
-                </th>
-
-                <th>
-                    Валюта
-                </th>
-
-                <th>
-                    Баланс
-                </th>
-
-            </tr>
-
-            </thead>
+            </#if>
 
 
-            <tbody>
+            <div class="form-group">
 
-            <#list accounts as account>
+                <label for="currency">
+                    <@spring.message "profile.currency"/>
+                </label>
+
+                <select
+                        id="currency"
+                        name="currency"
+                        required
+                >
+
+                    <#list currencies as currency>
+
+                        <option value="${currency}">
+                            ${currency}
+                        </option>
+
+                    </#list>
+
+                </select>
+
+            </div>
+
+
+            <button type="submit">
+                <@spring.message "profile.create"/>
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            <@spring.message "profile.accounts"/>
+        </h2>
+
+
+        <#if accounts?has_content>
+
+            <table>
+
+                <thead>
 
                 <tr>
 
-                    <td>
-                        ${account.accountNumber}
-                    </td>
+                    <th>
+                        <@spring.message "profile.accountNumber"/>
+                    </th>
 
-                    <td>
-                        ${account.currency}
-                    </td>
+                    <th>
+                        <@spring.message "profile.currency"/>
+                    </th>
 
-                    <td>
-                        ${account.balance?string["0.00"]}
-                    </td>
+                    <th>
+                        <@spring.message "profile.balance"/>
+                    </th>
 
                 </tr>
 
-            </#list>
+                </thead>
 
-            </tbody>
 
-        </table>
+                <tbody>
 
-    <#else>
+                <#list accounts as account>
 
-        <p>
-            У вас пока нет счетов.
-        </p>
+                    <tr>
 
-    </#if>
+                        <td>
+                            ${account.accountNumber}
+                        </td>
 
-</div>
-/@main.layout
+                        <td>
+                            ${account.currency}
+                        </td>
+
+                        <td>
+                            ${account.balance?string["0.00"]}
+                        </td>
+
+                    </tr>
+
+                </#list>
+
+                </tbody>
+
+            </table>
+
+        <#else>
+
+            <p>
+                <@spring.message "profile.noAccounts"/>
+            </p>
+
+        </#if>
+
+    </div>
+
+</@main.layout>

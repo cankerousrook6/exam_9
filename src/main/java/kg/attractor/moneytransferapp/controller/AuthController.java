@@ -45,7 +45,7 @@ public class AuthController {
             bindingResult.rejectValue(
                     "username",
                     "username.exists",
-                    "User with this username already exists"
+                    "{register.username.exists}"
             );
         }
 

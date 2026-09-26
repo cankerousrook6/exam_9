@@ -1,16 +1,23 @@
+<#import "/spring.ftl" as spring>
+
 <#macro layout>
 
 <!DOCTYPE html>
-<html lang="ru">
+
+<html>
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>MoneyTransferApp</title>
+    <title>
+        <@spring.message "app.name"/>
+    </title>
 
     <link
             rel="stylesheet"
@@ -26,23 +33,31 @@
     <nav>
 
         <a href="/">
-            MoneyTransferApp
+            <@spring.message "nav.home"/>
         </a>
 
         <a href="/profile">
-            Профиль
+            <@spring.message "nav.profile"/>
         </a>
 
         <a href="/transactions">
-            Транзакции
+            <@spring.message "nav.transactions"/>
         </a>
 
         <a href="/transfer">
-            Перевод
+            <@spring.message "nav.transfer"/>
         </a>
 
         <a href="/services">
-            Оплата услуг
+            <@spring.message "nav.services"/>
+        </a>
+
+        <a href="?lang=ru">
+            <@spring.message "language.ru"/>
+        </a>
+
+        <a href="?lang=en">
+            <@spring.message "language.en"/>
         </a>
 
     </nav>
@@ -55,7 +70,6 @@
     <#nested>
 
 </main>
-
 
 </body>
 

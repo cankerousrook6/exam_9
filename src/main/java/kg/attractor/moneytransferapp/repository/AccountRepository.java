@@ -1,9 +1,24 @@
 package kg.attractor.moneytransferapp.repository;
-import kg.attractor.moneytransferapp.model.Account; import kg.attractor.moneytransferapp.model.User; import kg.attractor.moneytransferapp.model.enums.CurrencyType; import org.springframework.data.jpa.repository.JpaRepository; import org.springframework.stereotype.Repository;
+
+import kg.attractor.moneytransferapp.model.Account;
+import kg.attractor.moneytransferapp.model.User;
+import kg.attractor.moneytransferapp.model.enums.CurrencyType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-@Repository public interface AccountRepository extends JpaRepository<Account, Long> {
+import java.util.Optional;
+
+@Repository
+public interface AccountRepository
+        extends JpaRepository<Account, Long> {
+
     List<Account> findAllByUser(
             User user
+    );
+
+    Optional<Account> findByAccountNumber(
+            String accountNumber
     );
 
     boolean existsByAccountNumber(
