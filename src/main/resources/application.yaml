@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: MoneyTransferApp
+
+  datasource:
+    url: jdbc:h2:file:./db/moneytransfer
+    username: root
+    password: qwerty
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  freemarker:
+    expose-request-attributes: true
+    expose-session-attributes: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
