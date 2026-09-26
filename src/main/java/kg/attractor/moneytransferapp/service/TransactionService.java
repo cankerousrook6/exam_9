@@ -4,6 +4,7 @@ import kg.attractor.moneytransferapp.model.Transaction;
 import kg.attractor.moneytransferapp.model.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface TransactionService {
 
@@ -17,5 +18,17 @@ public interface TransactionService {
             Long senderAccountId,
             String receiverAccountNumber,
             BigDecimal amount
+    );
+
+    List<Transaction> getAll();
+
+    List<Transaction> getPending();
+
+    Transaction getById(
+            Long id
+    );
+
+    void approve(
+            Long id
     );
 }

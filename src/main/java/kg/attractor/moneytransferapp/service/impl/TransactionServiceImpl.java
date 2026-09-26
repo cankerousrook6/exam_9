@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -256,6 +258,126 @@ public class TransactionServiceImpl
         );
 
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> getAll() {
+
+        return transactionRepository
+                .findAllByOrderByCreatedAtDesc();
+    }
+
+    @Override
+    public List<Transaction> getPending() {
+
+        return transactionRepository
+                .findAllByStatusOrderByCreatedAtAsc(
+                        TransactionStatus.PENDING
+                );
+    }
+
+    @Override
+    public Transaction getById(
+            Long id
+    ) {
+
+        return transactionRepository
+                .findById(id)
+                .orElseThrow(
+                        () ->
+                                new NoSuchElementException(
+                                        "admin.transactionNotFound"
+                                )
+                );
+    }
+
+    @Override
+    @Transactional
+    public void approve(
+            Long id
+    ) {
+
+        Transaction transaction =
+                getById(id);
+
+        if (
+                transaction.getStatus()
+                        != TransactionStatus.PENDING
+        ) {
+
+            throw new IllegalArgumentException(
+                    "admin.notPending"
+            );
+        }
+
+        if (
+                transaction.getType()
+                        != TransactionType.TRANSFER
+        ) {
+
+            throw new IllegalArgumentException(
+                    "admin.onlyTransfer"
+            );
+        }
+
+        Account sender =
+                transaction.getSenderAccount();
+
+        Account receiver =
+                transaction.getReceiverAccount();
+
+        if (
+                sender.getBalance()
+                        .compareTo(
+                                transaction.getAmount()
+                        )
+                        < 0
+        ) {
+
+            log.warn(
+                    "Transfer {} cannot be approved. Not enough money",
+                    id
+            );
+
+            throw new IllegalArgumentException(
+                    "admin.notEnoughMoney"
+            );
+        }
+
+        sender.setBalance(
+                sender.getBalance()
+                        .subtract(
+                                transaction.getAmount()
+                        )
+        );
+
+        receiver.setBalance(
+                receiver.getBalance()
+                        .add(
+                                transaction.getReceivedAmount()
+                        )
+        );
+
+        accountRepository.save(
+                sender
+        );
+
+        accountRepository.save(
+                receiver
+        );
+
+        transaction.setStatus(
+                TransactionStatus.COMPLETED
+        );
+
+        transactionRepository.save(
+                transaction
+        );
+
+        log.info(
+                "Transfer {} approved and completed",
+                id
+        );
     }
 
     private BigDecimal getExchangeRate(
